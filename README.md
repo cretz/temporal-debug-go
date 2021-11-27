@@ -68,8 +68,8 @@ That is the workflow ID. Now, we can check its code path:
 This will end with the output:
 
     ------ TRACE ------
-    Event 1 - EVENT_TYPE_WORKFLOW_EXECUTION_STARTED (1)
-    Event 3 - EVENT_TYPE_WORKFLOW_TASK_STARTED (6)
+    Event 1 - WorkflowExecutionStarted
+    Event 3 - WorkflowTaskStarted
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:12
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:13
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:18
@@ -78,23 +78,23 @@ This will end with the output:
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:23
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:37
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:38
-    Event 4 - EVENT_TYPE_WORKFLOW_TASK_COMPLETED (7)
-    Event 5 - EVENT_TYPE_ACTIVITY_TASK_SCHEDULED (10)
-    Event 6 - EVENT_TYPE_WORKFLOW_EXECUTION_CANCEL_REQUESTED (20)
-    Event 8 - EVENT_TYPE_WORKFLOW_TASK_STARTED (6)
-    Event 9 - EVENT_TYPE_WORKFLOW_TASK_COMPLETED (7)
-    Event 10 - EVENT_TYPE_ACTIVITY_TASK_CANCEL_REQUESTED (15)
-    Event 11 - EVENT_TYPE_ACTIVITY_TASK_STARTED (11)
-    Event 12 - EVENT_TYPE_ACTIVITY_TASK_COMPLETED (12)
-    Event 14 - EVENT_TYPE_WORKFLOW_TASK_STARTED (6)
+    Event 4 - WorkflowTaskCompleted
+    Event 5 - ActivityTaskScheduled
+    Event 6 - WorkflowExecutionCancelRequested
+    Event 8 - WorkflowTaskStarted
+    Event 9 - WorkflowTaskCompleted
+    Event 10 - ActivityTaskCancelRequested
+    Event 11 - ActivityTaskStarted
+    Event 12 - ActivityTaskCompleted
+    Event 14 - WorkflowTaskStarted
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:38
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:39
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:41
-    Event 15 - EVENT_TYPE_WORKFLOW_TASK_COMPLETED (7)
-    Event 16 - EVENT_TYPE_ACTIVITY_TASK_SCHEDULED (10)
-    Event 17 - EVENT_TYPE_ACTIVITY_TASK_CANCEL_REQUESTED (15)
-    Event 18 - EVENT_TYPE_ACTIVITY_TASK_CANCELED (16)
-    Event 20 - EVENT_TYPE_WORKFLOW_TASK_STARTED (6)
+    Event 15 - WorkflowTaskCompleted
+    Event 16 - ActivityTaskScheduled
+    Event 17 - ActivityTaskCancelRequested
+    Event 18 - ActivityTaskCanceled
+    Event 20 - WorkflowTaskStarted
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:41
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:42
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:44
@@ -103,11 +103,11 @@ This will end with the output:
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:25
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:30
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:31
-    Event 21 - EVENT_TYPE_WORKFLOW_TASK_COMPLETED (7)
-    Event 22 - EVENT_TYPE_ACTIVITY_TASK_SCHEDULED (10)
-    Event 23 - EVENT_TYPE_ACTIVITY_TASK_STARTED (11)
-    Event 24 - EVENT_TYPE_ACTIVITY_TASK_COMPLETED (12)
-    Event 26 - EVENT_TYPE_WORKFLOW_TASK_STARTED (6)
+    Event 21 - WorkflowTaskCompleted
+    Event 22 - ActivityTaskScheduled
+    Event 23 - ActivityTaskStarted
+    Event 24 - ActivityTaskCompleted
+    Event 26 - WorkflowTaskStarted
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:31
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:32
             /path/to/temporal-debug-go/examples/cancellation/workflow.go:35

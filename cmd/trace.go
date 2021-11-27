@@ -115,7 +115,11 @@ func trace(ctx context.Context, config TraceConfig) error {
 	}
 
 	// Do trace
-	res, err := tracer.Trace(ctx, tracerConfig)
+	t, err := tracer.New(tracerConfig)
+	if err != nil {
+		return err
+	}
+	res, err := t.Trace(ctx)
 	if err != nil {
 		return err
 	}

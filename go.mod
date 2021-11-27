@@ -6,6 +6,7 @@ require (
 	github.com/go-delve/delve v1.7.3
 	github.com/google/uuid v1.3.0
 	github.com/urfave/cli/v2 v2.3.0
+	go.temporal.io/api v1.5.0
 	go.temporal.io/sdk v1.11.1
 )
 
@@ -34,7 +35,6 @@ require (
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/twmb/murmur3 v1.1.6 // indirect
 	github.com/uber-go/tally/v4 v4.0.1 // indirect
-	go.temporal.io/api v1.5.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/arch v0.0.0-20190927153633-4e8777c89be4 // indirect
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
