@@ -60,6 +60,7 @@ func (tr *tracer) newTrace(dir, exe string) (*trace, error) {
 	const (
 		matchInternalPkg           = `.*/go\.temporal\.io/sdk.*/internal/`
 		matchInternalEventHandlers = matchInternalPkg + `internal_event_handlers\.go`
+		matchInternalTaskHandlers  = matchInternalPkg + `internal_task_handlers\.go`
 		matchInternalWorkflow      = matchInternalPkg + `internal_workflow\.go`
 	)
 
@@ -68,6 +69,11 @@ func (tr *tracer) newTrace(dir, exe string) (*trace, error) {
 	// Add breakpoint for obtaining the event
 	if err == nil {
 		err = t.addFileLineBreakpoint(matchInternalEventHandlers, "\tif event == nil {", t.onProcessEvent)
+	}
+	// Add breakpoint for obtaining the commands
+	if err == nil {
+		err = t.addFileLineBreakpoint(matchInternalTaskHandlers, "if len(eventCommands) > 0 && !skipReplayCheck {",
+			t.onReplayCommands)
 	}
 	// Add breakpoint for coroutine spawning
 	if err == nil {
@@ -254,14 +260,9 @@ func (t *trace) onProcessEvent() error {
 					}
 				} else if child.Name == "EventType" {
 					// Take the int in parentheses and convert to type
-					beginParens := strings.Index(child.Value, "(")
-					if beginParens < 0 || !strings.HasSuffix(child.Value, ")") {
-						return fmt.Errorf("invalid event type %q, expected int in parens at the end", child.Value)
-					}
-					intStr := child.Value[beginParens+1 : len(child.Value)-1]
-					i, err := strconv.Atoi(intStr)
+					i, err := intInTrailingParens(child.Value)
 					if err != nil {
-						return fmt.Errorf("invalid event type %q, failed converting to int: %w", child.Value, err)
+						return fmt.Errorf("invalid event type %q: %w", child.Value, err)
 					}
 					event.Type = EventServerType(i)
 				}
@@ -269,6 +270,34 @@ func (t *trace) onProcessEvent() error {
 		}
 	}
 	t.result.Events = append(t.result.Events, Event{Server: &event})
+	return nil
+}
+
+func (t *trace) onReplayCommands() error {
+	// Get "completedRequest" function arg which has "commands" array
+	vars, err := t.debug.LocalVariables(t.state.CurrentThread.GoroutineID, 0, 0, proc.LoadConfig{
+		FollowPointers: true, MaxStringLen: 200, MaxArrayValues: 100, MaxStructFields: -1, MaxVariableRecurse: 3,
+	})
+	if err != nil {
+		return fmt.Errorf("failed loading vars: %w", err)
+	}
+	// TODO(cretz): This is expensive!
+	var commands []EventClientCommandType
+	for _, arg := range api.ConvertVars(vars) {
+		if arg.Name == "eventCommands" {
+			for _, command := range arg.Children {
+				val := command.Children[0].Children[0].Value
+				i, err := intInTrailingParens(val)
+				if err != nil {
+					return fmt.Errorf("invalid command type %q: %w", val, err)
+				}
+				commands = append(commands, EventClientCommandType(i))
+			}
+		}
+	}
+	if len(commands) > 0 {
+		t.result.Events = append(t.result.Events, Event{Client: &EventClient{Commands: commands}})
+	}
 	return nil
 }
 
@@ -292,4 +321,13 @@ func (t *trace) populateCoroutineName() error {
 		}
 	}
 	return nil
+}
+
+func intInTrailingParens(str string) (int, error) {
+	beginParens := strings.Index(str, "(")
+	if beginParens < 0 || !strings.HasSuffix(str, ")") {
+		return 0, fmt.Errorf("expected int in parens at the end")
+	}
+	intStr := str[beginParens+1 : len(str)-1]
+	return strconv.Atoi(intStr)
 }

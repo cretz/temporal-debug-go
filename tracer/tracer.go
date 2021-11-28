@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/workflow"
@@ -36,45 +35,6 @@ type Config struct {
 	RetainTempDir bool
 
 	IncludeTemporalInternal bool
-}
-
-type Result struct {
-	Events []Event `json:"events"`
-}
-
-type Event struct {
-	// Only one of these is present
-	Server *EventServer `json:"server,omitempty"`
-	Code   *EventCode   `json:"code,omitempty"`
-}
-
-type EventServer struct {
-	ID   int64           `json:"eventId"`
-	Type EventServerType `json:"eventType"`
-}
-
-type EventServerType enums.EventType
-
-func (e *EventServerType) UnmarshalText(text []byte) error {
-	*e = EventServerType(enums.EventType_value[string(text)])
-	return nil
-}
-
-func (e EventServerType) MarshalText() ([]byte, error) {
-	return []byte(e.String()), nil
-}
-
-func (e EventServerType) String() string {
-	return enums.EventType(e).String()
-}
-
-type EventCode struct {
-	Package   string `json:"package,omitempty"`
-	File      string `json:"file,omitempty"`
-	Line      int    `json:"line,omitempty"`
-	Coroutine string `json:"coroutine,omitempty"`
-	// TODO(cretz): Locals
-	// LocalsUpdated []api.Variable `json:"locals_updated,omitempty"`
 }
 
 type Tracer interface {

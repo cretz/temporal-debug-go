@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/cretz/temporal-debug-go/tracer"
@@ -24,14 +26,17 @@ func traceCmd() *cli.Command {
 }
 
 type TraceConfig struct {
-	Address       string
-	Namespace     string
-	WorkflowID    string
-	RunID         string
-	HistoryFile   string
-	Func          string
-	RootDir       string
-	RetainTempDir bool
+	Address        string
+	Namespace      string
+	WorkflowID     string
+	RunID          string
+	HistoryFile    string
+	Func           string
+	OutputStdout   bool
+	OutputJSONFile string
+	OutputHTMLDir  string
+	RootDir        string
+	RetainTempDir  bool
 }
 
 func (t *TraceConfig) flags() []cli.Flag {
@@ -76,6 +81,21 @@ func (t *TraceConfig) flags() []cli.Flag {
 			Usage:       "Workflow function, qualified with package up to last dot",
 			Required:    true,
 			Destination: &t.Func,
+		},
+		&cli.BoolFlag{
+			Name:        "stdout",
+			Usage:       "Dump trace to stdout (default true if no other output)",
+			Destination: &t.OutputStdout,
+		},
+		&cli.StringFlag{
+			Name:        "json",
+			Usage:       "File to output JSON trace to",
+			Destination: &t.OutputJSONFile,
+		},
+		&cli.StringFlag{
+			Name:        "html",
+			Usage:       "Directory to output HTML to",
+			Destination: &t.OutputHTMLDir,
 		},
 		&cli.StringFlag{
 			Name:        "root",
@@ -125,21 +145,46 @@ func trace(ctx context.Context, config TraceConfig) error {
 		return err
 	}
 
-	// Dump result
-	fmt.Printf("------ TRACE ------\n")
-	lastFile, lastLine := "", -1
-	for _, event := range res.Events {
-		if event.Server != nil {
-			fmt.Printf("Event %v - %v\n", event.Server.ID, event.Server.Type)
-			lastFile, lastLine = "", -1
-		} else if event.Code != nil {
-			// Ignore if matches last file and line
-			if lastFile == event.Code.File && lastLine == event.Code.Line {
-				continue
+	// Dump result to stdout
+	if config.OutputStdout || (config.OutputJSONFile == "" && config.OutputHTMLDir == "") {
+		fmt.Printf("------ TRACE ------\n")
+		lastFile, lastLine := "", -1
+		for _, event := range res.Events {
+			if event.Server != nil {
+				fmt.Printf("Event %v - %v\n", event.Server.ID, event.Server.Type)
+				lastFile, lastLine = "", -1
+			} else if event.Client != nil {
+				for _, command := range event.Client.Commands {
+					fmt.Printf("\tCommand - %v\n", command)
+				}
+				lastFile, lastLine = "", -1
+			} else if event.Code != nil {
+				// Ignore if matches last file and line
+				if lastFile == event.Code.File && lastLine == event.Code.Line {
+					continue
+				}
+				fmt.Printf("\t%v - %v:%v\n", event.Code.Package, filepath.Base(event.Code.File), event.Code.Line)
+				lastFile, lastLine = event.Code.File, event.Code.Line
 			}
-			fmt.Printf("\t%v - %v:%v\n", event.Code.Package, filepath.Base(event.Code.File), event.Code.Line)
-			lastFile, lastLine = event.Code.File, event.Code.Line
 		}
 	}
+
+	// Dump result to JSON if requested
+	if config.OutputJSONFile != "" {
+		if j, err := json.MarshalIndent(res, "", "  "); err != nil {
+			return fmt.Errorf("failed marshaling JSON: %w", err)
+		} else if err = os.WriteFile(config.OutputJSONFile, j, 0644); err != nil {
+			return fmt.Errorf("failed writing %v: %w", config.OutputJSONFile, err)
+		}
+		fmt.Printf("Wrote JSON to %v\n", config.OutputJSONFile)
+	}
+
+	// Dump result to HTML if requested
+	if config.OutputHTMLDir != "" {
+		if err := tracer.GenerateHTML(config.OutputHTMLDir, res); err != nil {
+			return fmt.Errorf("failed generating HTML: %w", err)
+		}
+	}
+
 	return nil
 }

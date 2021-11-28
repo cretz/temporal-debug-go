@@ -78,10 +78,12 @@ This will end with the output:
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:23
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:37
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:38
+            Command - ScheduleActivityTask
     Event 4 - WorkflowTaskCompleted
     Event 5 - ActivityTaskScheduled
     Event 6 - WorkflowExecutionCancelRequested
     Event 8 - WorkflowTaskStarted
+            Command - RequestCancelActivityTask
     Event 9 - WorkflowTaskCompleted
     Event 10 - ActivityTaskCancelRequested
     Event 11 - ActivityTaskStarted
@@ -90,6 +92,8 @@ This will end with the output:
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:38
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:39
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:41
+            Command - ScheduleActivityTask
+            Command - RequestCancelActivityTask
     Event 15 - WorkflowTaskCompleted
     Event 16 - ActivityTaskScheduled
     Event 17 - ActivityTaskCancelRequested
@@ -103,6 +107,7 @@ This will end with the output:
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:25
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:30
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:31
+            Command - ScheduleActivityTask
     Event 21 - WorkflowTaskCompleted
     Event 22 - ActivityTaskScheduled
     Event 23 - ActivityTaskStarted
