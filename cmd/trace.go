@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 
 	"github.com/cretz/temporal-debug-go/tracer"
 	"github.com/urfave/cli/v2"
@@ -136,8 +137,7 @@ func trace(ctx context.Context, config TraceConfig) error {
 			if lastFile == event.Code.File && lastLine == event.Code.Line {
 				continue
 			}
-			// TODO(cretz): Attempt to relativize file?
-			fmt.Printf("\t%v:%v\n", event.Code.File, event.Code.Line)
+			fmt.Printf("\t%v - %v:%v\n", event.Code.Package, filepath.Base(event.Code.File), event.Code.Line)
 			lastFile, lastLine = event.Code.File, event.Code.Line
 		}
 	}

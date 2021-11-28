@@ -23,6 +23,7 @@ import (
 )
 
 func TestTracer(t *testing.T) {
+	require := require.New(t)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -35,34 +36,39 @@ func TestTracer(t *testing.T) {
 		temporalite.WithDynamicPorts(),
 		temporalite.WithLogger(log.NewNoopLogger()),
 	)
-	require.NoError(t, err)
-	require.NoError(t, srv.Start())
+	require.NoError(err)
+	require.NoError(srv.Start())
 	defer srv.Stop()
 
 	// Connect client
 	cl, err := srv.NewClient(ctx, namespace)
-	require.NoError(t, err)
+	require.NoError(err)
 	defer cl.Close()
 
 	// Start worker with workflow registered
 	const taskQueue = "my-task-queue"
 	wrk := worker.New(cl, taskQueue, worker.Options{WorkflowPanicPolicy: worker.FailWorkflow})
 	wrk.RegisterWorkflow(tracertest.TestWorkflow)
-	require.NoError(t, wrk.Start())
+	require.NoError(wrk.Start())
 	defer wrk.Stop()
 
 	// Start workflow
 	t.Log("Starting workflow")
 	startOpts := client.StartWorkflowOptions{ID: "my-workflow-" + uuid.NewString(), TaskQueue: taskQueue}
 	run, err := cl.ExecuteWorkflow(ctx, startOpts, tracertest.TestWorkflow)
-	require.NoError(t, err)
+	require.NoError(err)
 
-	// Wait for the coroutine to end
-	require.NoError(t, waitForMark(ctx, cl, run, "coroutine ended"))
+	// Send a value signal and wait until received
+	require.NoError(cl.SignalWorkflow(ctx, run.GetID(), run.GetRunID(), "value-signal", "value1"))
+	require.NoError(waitForMark(ctx, cl, run, "value signal with value1"))
 
-	// Send signal to continue and wait for workflow to end
-	require.NoError(t, cl.SignalWorkflow(ctx, run.GetID(), run.GetRunID(), "continue", nil))
-	require.NoError(t, run.Get(ctx, nil))
+	// Do it again
+	require.NoError(cl.SignalWorkflow(ctx, run.GetID(), run.GetRunID(), "value-signal", "value2"))
+	require.NoError(waitForMark(ctx, cl, run, "value signal with value2"))
+
+	// Send a continue to finish the workflow
+	require.NoError(cl.SignalWorkflow(ctx, run.GetID(), run.GetRunID(), "continue-signal", nil))
+	require.NoError(run.Get(ctx, nil))
 
 	// Trace the execution
 	t.Log("Running trace")
@@ -73,12 +79,18 @@ func TestTracer(t *testing.T) {
 		Execution:     &workflow.Execution{ID: run.GetID(), RunID: run.GetRunID()},
 		RootDir:       filepath.Dir(currFile),
 	})
-	require.NoError(t, err)
+	require.NoError(err)
 	res, err := tr.Trace(ctx)
-	require.NoError(t, err)
+	require.NoError(err)
 
-	j, _ := json.MarshalIndent(res, "", " ")
-	fmt.Printf("JSON: %s\n", j)
+	// TODO(cretz): Assert actual values
+	j, err := json.MarshalIndent(res, "", " ")
+	require.NoError(err)
+	t.Logf("JSON: %s", j)
+
+	marks, err := marks(ctx, cl, run)
+	require.NoError(err)
+	t.Logf("Marks: %v", marks)
 }
 
 func waitForMark(ctx context.Context, c client.Client, run client.WorkflowRun, mark string) error {
@@ -89,16 +101,8 @@ func waitForMark(ctx context.Context, c client.Client, run client.WorkflowRun, m
 	for {
 		select {
 		case <-ticker.C:
-			val, err := c.QueryWorkflow(ctx, run.GetID(), run.GetRunID(), "marks")
-			// Query can not be set yet which is ok
-			var queryFailed *serviceerror.QueryFailed
-			if errors.As(err, &queryFailed) {
-				continue
-			} else if err != nil {
-				return err
-			}
-			var marks []string
-			if err := val.Get(&marks); err != nil {
+			marks, err := marks(ctx, c, run)
+			if err != nil {
 				return err
 			}
 			for _, maybeMark := range marks {
@@ -110,4 +114,20 @@ func waitForMark(ctx context.Context, c client.Client, run client.WorkflowRun, m
 			return fmt.Errorf("deadline exceeded")
 		}
 	}
+}
+
+func marks(ctx context.Context, c client.Client, run client.WorkflowRun) ([]string, error) {
+	val, err := c.QueryWorkflow(ctx, run.GetID(), run.GetRunID(), "marks-query")
+	// Query can not be set yet which is ok
+	var queryFailed *serviceerror.QueryFailed
+	if errors.As(err, &queryFailed) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	var marks []string
+	if err := val.Get(&marks); err != nil {
+		return nil, err
+	}
+	return marks, nil
 }

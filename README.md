@@ -70,14 +70,14 @@ This will end with the output:
     ------ TRACE ------
     Event 1 - WorkflowExecutionStarted
     Event 3 - WorkflowTaskStarted
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:12
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:13
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:18
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:19
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:22
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:23
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:37
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:38
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:12
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:13
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:18
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:19
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:22
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:23
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:37
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:38
     Event 4 - WorkflowTaskCompleted
     Event 5 - ActivityTaskScheduled
     Event 6 - WorkflowExecutionCancelRequested
@@ -87,31 +87,31 @@ This will end with the output:
     Event 11 - ActivityTaskStarted
     Event 12 - ActivityTaskCompleted
     Event 14 - WorkflowTaskStarted
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:38
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:39
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:41
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:38
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:39
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:41
     Event 15 - WorkflowTaskCompleted
     Event 16 - ActivityTaskScheduled
     Event 17 - ActivityTaskCancelRequested
     Event 18 - ActivityTaskCanceled
     Event 20 - WorkflowTaskStarted
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:41
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:42
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:44
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:46
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:23
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:25
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:30
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:31
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:41
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:42
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:44
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:46
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:23
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:25
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:30
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:31
     Event 21 - WorkflowTaskCompleted
     Event 22 - ActivityTaskScheduled
     Event 23 - ActivityTaskStarted
     Event 24 - ActivityTaskCompleted
     Event 26 - WorkflowTaskStarted
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:31
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:32
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:35
-            /path/to/temporal-debug-go/examples/cancellation/workflow.go:46
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:31
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:32
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:35
+            github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:46
 
 ### How
 

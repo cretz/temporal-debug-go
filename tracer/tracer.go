@@ -69,6 +69,7 @@ func (e EventServerType) String() string {
 }
 
 type EventCode struct {
+	Package   string `json:"package,omitempty"`
 	File      string `json:"file,omitempty"`
 	Line      int    `json:"line,omitempty"`
 	Coroutine string `json:"coroutine,omitempty"`

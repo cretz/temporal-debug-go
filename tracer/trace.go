@@ -16,19 +16,18 @@ import (
 
 type trace struct {
 	*tracer
-	result      Result
-	debug       *debugger.Debugger
-	state       *api.DebuggerState
-	sourceCache map[string]string
-	breakpoints map[int]*breakpoint
+	result       Result
+	debug        *debugger.Debugger
+	state        *api.DebuggerState
+	sourceCache  map[string]string
+	packageFiles map[string]string
+	breakpoints  map[int]*breakpoint
 	// Key is goroutine ID
 	coroutineNames map[int]string
 }
 
 type breakpoint struct {
 	*api.Breakpoint
-	// If true, this cancels next and prevents a step out
-	forStepping bool
 	// Can be nil
 	handler func() error
 }
@@ -37,6 +36,7 @@ func (tr *tracer) newTrace(dir, exe string) (*trace, error) {
 	t := &trace{
 		tracer:         tr,
 		sourceCache:    map[string]string{},
+		packageFiles:   map[string]string{},
 		breakpoints:    map[int]*breakpoint{},
 		coroutineNames: map[int]string{},
 	}
@@ -64,14 +64,18 @@ func (tr *tracer) newTrace(dir, exe string) (*trace, error) {
 	)
 
 	// Add breakpoint for workflow start
-	err = t.addFuncBreakpoint(t.fnPkg+"."+t.fn, true, nil)
-	// Add non-stepping breakpoint for obtaining the event
+	err = t.addFuncBreakpoint(t.fnPkg+"."+t.fn, nil)
+	// Add breakpoint for obtaining the event
 	if err == nil {
-		err = t.addFileLineBreakpoint(matchInternalEventHandlers, "\tif event == nil {", false, t.onProcessEvent)
+		err = t.addFileLineBreakpoint(matchInternalEventHandlers, "\tif event == nil {", t.onProcessEvent)
 	}
-	// Add stepping breakpoint for coroutine spawning
+	// Add breakpoint for coroutine spawning
 	if err == nil {
-		err = t.addFileLineBreakpoint(matchInternalWorkflow, "\t\tf(spawned)", true, t.populateCoroutineName)
+		err = t.addFileLineBreakpoint(matchInternalWorkflow, "\t\tf(spawned)", t.populateCoroutineName)
+	}
+	// Add breakpoint for end of initial yield
+	if err == nil {
+		err = t.addFileLineBreakpoint(matchInternalWorkflow, "\ts.blocked.Swap(false)", nil)
 	}
 	if err != nil {
 		return nil, err
@@ -103,7 +107,7 @@ func (t *trace) run() error {
 
 	// Step until runtime exit
 	goRootSrc := filepath.ToSlash(filepath.Join(runtime.GOROOT(), "src"))
-	for !t.state.Exited && t.state.CurrentThread != nil && t.state.CurrentThread.Function.Name() != "runtime.goexit" {
+	for !t.state.Exited {
 
 		// If we have hit a breakpoint, capture it
 		var bp *breakpoint
@@ -117,34 +121,29 @@ func (t *trace) run() error {
 			}
 		}
 
-		// This means we have hit a breakpoint while stepping from another
-		// breakpoint. Our only options are to "cancel next" which means to ignore
-		// what we were doing and step here, or "continue" which means go back to
-		// what we were doing before this breakpoint. We want to "cancel next" if
-		// the breakpoint is for stepping (i.e. resume stepping here), or "continue"
-		// if it is not.
+		// If there is a next in progress, it means a breakpoint was hit while
+		// stepping from another. Since we have logic to step out where we want and
+		// return from yields, we just cancel all next's.
 		if t.state.NextInProgress {
-			// Continue if not a for-stepping breakpoint
-			if bp == nil || !bp.forStepping {
-				t.state, err = t.debug.Command(&api.DebuggerCommand{Name: api.Continue}, nil)
-				if err != nil {
-					return fmt.Errorf("failed continuing while next in progress: %w", err)
-				}
-				continue
-			}
-			// Otherwise, just cancel next and move on
 			if err := t.debug.CancelNext(); err != nil {
 				return fmt.Errorf("failed cancelling next: %w", err)
 			}
 		}
 
-		// Unless we're at a for-stepping breakpoint, we step out if the file is
-		// prefixed with GOROOT or it is part of the temporal SDK or it is main
+		// If the file is in the GOROOT or part of Temporal inner code, we step out
 		goStdOrTemporal := strings.HasPrefix(filepath.ToSlash(t.state.CurrentThread.File), goRootSrc) ||
 			strings.HasPrefix(t.state.CurrentThread.Function.Name(), "go.temporal.io/sdk/") ||
+			strings.HasPrefix(t.state.CurrentThread.Function.Name(), "go.uber.org/atomic.") ||
+			strings.HasPrefix(t.state.CurrentThread.Function.Name(), "runtime.") ||
 			t.state.CurrentThread.Function.Name() == "main.main"
-		if (bp == nil || !bp.forStepping) && goStdOrTemporal {
-			t.state, err = t.debug.Command(&api.DebuggerCommand{Name: api.StepOut}, nil)
+		if goStdOrTemporal {
+			// If the function is runtime.goexit, we cannot step out because there is
+			// nothing to step out to
+			if strings.HasPrefix(t.state.CurrentThread.Function.Name(), "runtime.goexit") {
+				t.state, err = t.debug.Command(&api.DebuggerCommand{Name: api.Step}, nil)
+			} else {
+				t.state, err = t.debug.Command(&api.DebuggerCommand{Name: api.StepOut}, nil)
+			}
 			if err != nil {
 				return fmt.Errorf("failed stepping out: %w", err)
 			}
@@ -153,7 +152,9 @@ func (t *trace) run() error {
 
 		// This is a line that represents an event if not Go stdlib or temporal
 		if t.state.CurrentThread.File != "" && !goStdOrTemporal {
+			pkg, _ := t.debug.CurrentPackage()
 			t.result.Events = append(t.result.Events, Event{Code: &EventCode{
+				Package:   pkg,
 				File:      t.state.CurrentThread.File,
 				Line:      t.state.CurrentThread.Line,
 				Coroutine: t.coroutineNames[t.state.CurrentThread.GoroutineID],
@@ -175,13 +176,8 @@ func (t *trace) run() error {
 	return nil
 }
 
-func (t *trace) addFileLineBreakpoint(
-	fileRegex string,
-	// Breakpoint is on last line of code
-	codeToMatch string,
-	forStepping bool,
-	handler func() error,
-) error {
+// Breakpoint created for last line of code to match
+func (t *trace) addFileLineBreakpoint(fileRegex string, codeToMatch string, handler func() error) error {
 	// Find the file name
 	// TODO(cretz): Cache this lookup too?
 	var file string
@@ -227,16 +223,16 @@ func (t *trace) addFileLineBreakpoint(
 	if err != nil {
 		return err
 	}
-	t.breakpoints[bp.ID] = &breakpoint{Breakpoint: bp, forStepping: forStepping, handler: handler}
+	t.breakpoints[bp.ID] = &breakpoint{Breakpoint: bp, handler: handler}
 	return nil
 }
 
-func (t *trace) addFuncBreakpoint(fn string, forStepping bool, handler func() error) error {
+func (t *trace) addFuncBreakpoint(fn string, handler func() error) error {
 	bp, err := t.debug.CreateBreakpoint(&api.Breakpoint{FunctionName: fn})
 	if err != nil {
 		return err
 	}
-	t.breakpoints[bp.ID] = &breakpoint{Breakpoint: bp, forStepping: forStepping, handler: handler}
+	t.breakpoints[bp.ID] = &breakpoint{Breakpoint: bp, handler: handler}
 	return nil
 }
 
