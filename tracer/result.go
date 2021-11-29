@@ -3,7 +3,7 @@ package tracer
 import "go.temporal.io/api/enums/v1"
 
 type Result struct {
-	Events []Event `json:"events"`
+	Events []*Event `json:"events"`
 }
 
 type Event struct {

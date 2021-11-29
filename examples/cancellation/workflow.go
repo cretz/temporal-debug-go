@@ -74,5 +74,3 @@ func (a *Activities) ActivityToBeSkipped(ctx context.Context) error {
 	logger.Info("this Activity will be skipped due to cancellation")
 	return nil
 }
-
-// @@@SNIPEND

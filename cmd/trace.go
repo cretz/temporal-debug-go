@@ -181,9 +181,10 @@ func trace(ctx context.Context, config TraceConfig) error {
 
 	// Dump result to HTML if requested
 	if config.OutputHTMLDir != "" {
-		if err := tracer.GenerateHTML(config.OutputHTMLDir, res); err != nil {
+		if err := t.GenerateHTML(config.OutputHTMLDir, res); err != nil {
 			return fmt.Errorf("failed generating HTML: %w", err)
 		}
+		fmt.Printf("Wrote HTML to %v\n", config.OutputHTMLDir)
 	}
 
 	return nil

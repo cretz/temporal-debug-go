@@ -1,0 +1,407 @@
+{
+  "events": [
+    {
+      "server": {
+        "eventId": 1,
+        "eventType": "WorkflowExecutionStarted"
+      }
+    },
+    {
+      "server": {
+        "eventId": 3,
+        "eventType": "WorkflowTaskStarted"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 12,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 13,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 13,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 18,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 18,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 19,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 22,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 23,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 37,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 38,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 38,
+        "coroutine": "root"
+      }
+    },
+    {
+      "client": {
+        "commands": [
+          "ScheduleActivityTask"
+        ]
+      }
+    },
+    {
+      "server": {
+        "eventId": 4,
+        "eventType": "WorkflowTaskCompleted"
+      }
+    },
+    {
+      "server": {
+        "eventId": 5,
+        "eventType": "ActivityTaskScheduled"
+      }
+    },
+    {
+      "server": {
+        "eventId": 6,
+        "eventType": "WorkflowExecutionCancelRequested"
+      }
+    },
+    {
+      "server": {
+        "eventId": 8,
+        "eventType": "WorkflowTaskStarted"
+      }
+    },
+    {
+      "client": {
+        "commands": [
+          "RequestCancelActivityTask"
+        ]
+      }
+    },
+    {
+      "server": {
+        "eventId": 9,
+        "eventType": "WorkflowTaskCompleted"
+      }
+    },
+    {
+      "server": {
+        "eventId": 10,
+        "eventType": "ActivityTaskCancelRequested"
+      }
+    },
+    {
+      "server": {
+        "eventId": 11,
+        "eventType": "ActivityTaskStarted"
+      }
+    },
+    {
+      "server": {
+        "eventId": 12,
+        "eventType": "ActivityTaskCompleted"
+      }
+    },
+    {
+      "server": {
+        "eventId": 14,
+        "eventType": "WorkflowTaskStarted"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 38,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 39,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 41,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 41,
+        "coroutine": "root"
+      }
+    },
+    {
+      "client": {
+        "commands": [
+          "ScheduleActivityTask",
+          "RequestCancelActivityTask"
+        ]
+      }
+    },
+    {
+      "server": {
+        "eventId": 15,
+        "eventType": "WorkflowTaskCompleted"
+      }
+    },
+    {
+      "server": {
+        "eventId": 16,
+        "eventType": "ActivityTaskScheduled"
+      }
+    },
+    {
+      "server": {
+        "eventId": 17,
+        "eventType": "ActivityTaskCancelRequested"
+      }
+    },
+    {
+      "server": {
+        "eventId": 18,
+        "eventType": "ActivityTaskCanceled"
+      }
+    },
+    {
+      "server": {
+        "eventId": 20,
+        "eventType": "WorkflowTaskStarted"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 41,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 42,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 44,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 46,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 23,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 25,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 25,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 25,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 30,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 30,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 31,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 31,
+        "coroutine": "root"
+      }
+    },
+    {
+      "client": {
+        "commands": [
+          "ScheduleActivityTask"
+        ]
+      }
+    },
+    {
+      "server": {
+        "eventId": 21,
+        "eventType": "WorkflowTaskCompleted"
+      }
+    },
+    {
+      "server": {
+        "eventId": 22,
+        "eventType": "ActivityTaskScheduled"
+      }
+    },
+    {
+      "server": {
+        "eventId": 23,
+        "eventType": "ActivityTaskStarted"
+      }
+    },
+    {
+      "server": {
+        "eventId": 24,
+        "eventType": "ActivityTaskCompleted"
+      }
+    },
+    {
+      "server": {
+        "eventId": 26,
+        "eventType": "WorkflowTaskStarted"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 31,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 32,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 35,
+        "coroutine": "root"
+      }
+    },
+    {
+      "code": {
+        "package": "github.com/cretz/temporal-debug-go/examples/cancellation",
+        "file": "/path/to/temporal-debug-go/examples/cancellation/workflow.go",
+        "line": 46,
+        "coroutine": "root"
+      }
+    }
+  ]
+}

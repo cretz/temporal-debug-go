@@ -37,18 +37,14 @@ type Config struct {
 	IncludeTemporalInternal bool
 }
 
-type Tracer interface {
-	Trace(ctx context.Context) (*Result, error)
-}
-
-type tracer struct {
+type Tracer struct {
 	Config
 	fnPkg string
 	fn    string
 }
 
-func New(config Config) (Tracer, error) {
-	t := &tracer{Config: config}
+func New(config Config) (*Tracer, error) {
+	t := &Tracer{Config: config}
 	if t.Execution == nil && t.HistoryFile == "" {
 		return nil, fmt.Errorf("must have existing execution or history file")
 	} else if t.Execution != nil && t.HistoryFile != "" {
@@ -72,7 +68,7 @@ func New(config Config) (Tracer, error) {
 	return t, nil
 }
 
-func (t *tracer) Trace(ctx context.Context) (*Result, error) {
+func (t *Tracer) Trace(ctx context.Context) (*Result, error) {
 	// Create temp dir
 	dir, err := os.MkdirTemp(t.RootDir, "debug-go-trace-")
 	if err != nil {
@@ -136,7 +132,7 @@ func (t *tracer) Trace(ctx context.Context) (*Result, error) {
 	return &trace.result, nil
 }
 
-func (t *tracer) buildReplayMainCode() ([]byte, error) {
+func (t *Tracer) buildReplayMainCode() ([]byte, error) {
 	optionsCode, err := t.buildClientOptionsCode()
 	if err != nil {
 		return nil, fmt.Errorf("invalid client options: %w", err)
@@ -203,7 +199,7 @@ func main() {
 	return format.Source([]byte(source))
 }
 
-func (t *tracer) buildClientOptionsCode() (string, error) {
+func (t *Tracer) buildClientOptionsCode() (string, error) {
 	// For now, only some params required, others disallowed
 	if t.ClientOptions.HostPort == "" {
 		return "", fmt.Errorf("missing host:port")

@@ -15,7 +15,7 @@ import (
 )
 
 type trace struct {
-	*tracer
+	*Tracer
 	result       Result
 	debug        *debugger.Debugger
 	state        *api.DebuggerState
@@ -32,9 +32,9 @@ type breakpoint struct {
 	handler func() error
 }
 
-func (tr *tracer) newTrace(dir, exe string) (*trace, error) {
+func (tr *Tracer) newTrace(dir, exe string) (*trace, error) {
 	t := &trace{
-		tracer:         tr,
+		Tracer:         tr,
 		sourceCache:    map[string]string{},
 		packageFiles:   map[string]string{},
 		breakpoints:    map[int]*breakpoint{},
@@ -159,7 +159,7 @@ func (t *trace) run() error {
 		// This is a line that represents an event if not Go stdlib or temporal
 		if t.state.CurrentThread.File != "" && !goStdOrTemporal {
 			pkg, _ := t.debug.CurrentPackage()
-			t.result.Events = append(t.result.Events, Event{Code: &EventCode{
+			t.result.Events = append(t.result.Events, &Event{Code: &EventCode{
 				Package:   pkg,
 				File:      t.state.CurrentThread.File,
 				Line:      t.state.CurrentThread.Line,
@@ -269,7 +269,7 @@ func (t *trace) onProcessEvent() error {
 			}
 		}
 	}
-	t.result.Events = append(t.result.Events, Event{Server: &event})
+	t.result.Events = append(t.result.Events, &Event{Server: &event})
 	return nil
 }
 
@@ -296,7 +296,7 @@ func (t *trace) onReplayCommands() error {
 		}
 	}
 	if len(commands) > 0 {
-		t.result.Events = append(t.result.Events, Event{Client: &EventClient{Commands: commands}})
+		t.result.Events = append(t.result.Events, &Event{Client: &EventClient{Commands: commands}})
 	}
 	return nil
 }

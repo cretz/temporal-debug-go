@@ -1,0 +1,168 @@
+<html>
+<style type="text/css">
+/* Background */ .chroma { background-color: #ffffff }
+/* Error */ .chroma .err { color: #a61717; background-color: #e3d2d2 }
+/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; width: auto; overflow: auto; display: block; }
+/* LineHighlight */ .chroma .hl { display: block; width: 100%;background-color: #e5e5e5 }
+/* LineNumbersTable */ .chroma .lnt { margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .chroma .ln { margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Keyword */ .chroma .k { color: #000000; font-weight: bold }
+/* KeywordConstant */ .chroma .kc { color: #000000; font-weight: bold }
+/* KeywordDeclaration */ .chroma .kd { color: #000000; font-weight: bold }
+/* KeywordNamespace */ .chroma .kn { color: #000000; font-weight: bold }
+/* KeywordPseudo */ .chroma .kp { color: #000000; font-weight: bold }
+/* KeywordReserved */ .chroma .kr { color: #000000; font-weight: bold }
+/* KeywordType */ .chroma .kt { color: #445588; font-weight: bold }
+/* NameAttribute */ .chroma .na { color: #008080 }
+/* NameBuiltin */ .chroma .nb { color: #0086b3 }
+/* NameBuiltinPseudo */ .chroma .bp { color: #999999 }
+/* NameClass */ .chroma .nc { color: #445588; font-weight: bold }
+/* NameConstant */ .chroma .no { color: #008080 }
+/* NameDecorator */ .chroma .nd { color: #3c5d5d; font-weight: bold }
+/* NameEntity */ .chroma .ni { color: #800080 }
+/* NameException */ .chroma .ne { color: #990000; font-weight: bold }
+/* NameFunction */ .chroma .nf { color: #990000; font-weight: bold }
+/* NameLabel */ .chroma .nl { color: #990000; font-weight: bold }
+/* NameNamespace */ .chroma .nn { color: #555555 }
+/* NameTag */ .chroma .nt { color: #000080 }
+/* NameVariable */ .chroma .nv { color: #008080 }
+/* NameVariableClass */ .chroma .vc { color: #008080 }
+/* NameVariableGlobal */ .chroma .vg { color: #008080 }
+/* NameVariableInstance */ .chroma .vi { color: #008080 }
+/* LiteralString */ .chroma .s { color: #dd1144 }
+/* LiteralStringAffix */ .chroma .sa { color: #dd1144 }
+/* LiteralStringBacktick */ .chroma .sb { color: #dd1144 }
+/* LiteralStringChar */ .chroma .sc { color: #dd1144 }
+/* LiteralStringDelimiter */ .chroma .dl { color: #dd1144 }
+/* LiteralStringDoc */ .chroma .sd { color: #dd1144 }
+/* LiteralStringDouble */ .chroma .s2 { color: #dd1144 }
+/* LiteralStringEscape */ .chroma .se { color: #dd1144 }
+/* LiteralStringHeredoc */ .chroma .sh { color: #dd1144 }
+/* LiteralStringInterpol */ .chroma .si { color: #dd1144 }
+/* LiteralStringOther */ .chroma .sx { color: #dd1144 }
+/* LiteralStringRegex */ .chroma .sr { color: #009926 }
+/* LiteralStringSingle */ .chroma .s1 { color: #dd1144 }
+/* LiteralStringSymbol */ .chroma .ss { color: #990073 }
+/* LiteralNumber */ .chroma .m { color: #009999 }
+/* LiteralNumberBin */ .chroma .mb { color: #009999 }
+/* LiteralNumberFloat */ .chroma .mf { color: #009999 }
+/* LiteralNumberHex */ .chroma .mh { color: #009999 }
+/* LiteralNumberInteger */ .chroma .mi { color: #009999 }
+/* LiteralNumberIntegerLong */ .chroma .il { color: #009999 }
+/* LiteralNumberOct */ .chroma .mo { color: #009999 }
+/* Operator */ .chroma .o { color: #000000; font-weight: bold }
+/* OperatorWord */ .chroma .ow { color: #000000; font-weight: bold }
+/* Comment */ .chroma .c { color: #999988; font-style: italic }
+/* CommentHashbang */ .chroma .ch { color: #999988; font-style: italic }
+/* CommentMultiline */ .chroma .cm { color: #999988; font-style: italic }
+/* CommentSingle */ .chroma .c1 { color: #999988; font-style: italic }
+/* CommentSpecial */ .chroma .cs { color: #999999; font-weight: bold; font-style: italic }
+/* CommentPreproc */ .chroma .cp { color: #999999; font-weight: bold; font-style: italic }
+/* CommentPreprocFile */ .chroma .cpf { color: #999999; font-weight: bold; font-style: italic }
+/* GenericDeleted */ .chroma .gd { color: #000000; background-color: #ffdddd }
+/* GenericEmph */ .chroma .ge { color: #000000; font-style: italic }
+/* GenericError */ .chroma .gr { color: #aa0000 }
+/* GenericHeading */ .chroma .gh { color: #999999 }
+/* GenericInserted */ .chroma .gi { color: #000000; background-color: #ddffdd }
+/* GenericOutput */ .chroma .go { color: #888888 }
+/* GenericPrompt */ .chroma .gp { color: #555555 }
+/* GenericStrong */ .chroma .gs { font-weight: bold }
+/* GenericSubheading */ .chroma .gu { color: #aaaaaa }
+/* GenericTraceback */ .chroma .gt { color: #aa0000 }
+/* GenericUnderline */ .chroma .gl { text-decoration: underline }
+/* TextWhitespace */ .chroma .w { color: #bbbbbb }
+body { background-color: #ffffff; }
+</style><body class="chroma">
+<pre tabindex="0" class="chroma"><span><span class="ln" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span class="kn">package</span> <span class="nx">cancellation</span>
+</span><span><span class="ln" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
+</span><span><span class="ln" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span class="kn">import</span> <span class="p">(</span>
+</span><span><span class="ln" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>	<span class="s">&#34;context&#34;</span>
+</span><span><span class="ln" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>	<span class="s">&#34;errors&#34;</span>
+</span><span><span class="ln" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>	<span class="s">&#34;time&#34;</span>
+</span><span><span class="ln" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>
+</span><span><span class="ln" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>	<span class="s">&#34;go.temporal.io/sdk/activity&#34;</span>
+</span><span><span class="ln" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>	<span class="s">&#34;go.temporal.io/sdk/workflow&#34;</span>
+</span><span><span class="ln" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span class="p">)</span>
+</span><span><span class="ln" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>
+</span><span><span class="ln" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span class="kd">func</span> <span class="nf">MyWorkflow</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">workflow</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span><span><span class="ln" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>	<span class="nx">ctx</span> <span class="p">=</span> <span class="nx">workflow</span><span class="p">.</span><span class="nf">WithActivityOptions</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">workflow</span><span class="p">.</span><span class="nx">ActivityOptions</span><span class="p">{</span>
+</span><span><span class="ln" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>		<span class="nx">StartToCloseTimeout</span><span class="p">:</span> <span class="mi">30</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span><span class="p">,</span>
+</span><span><span class="ln" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>		<span class="nx">HeartbeatTimeout</span><span class="p">:</span>    <span class="mi">5</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span>
+</span><span><span class="ln" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>		<span class="nx">WaitForCancellation</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span><span class="ln" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>	<span class="p">})</span>
+</span><span><span class="ln" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>	<span class="nx">log</span> <span class="o">:=</span> <span class="nx">workflow</span><span class="p">.</span><span class="nf">GetLogger</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span><span><span class="ln" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>	<span class="nx">log</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;Cancel workflow started&#34;</span><span class="p">)</span>
+</span><span><span class="ln" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>
+</span><span><span class="ln" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>	<span class="c1">// Used to call activities by function pointer
+</span></span><span><span class="ln" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span class="c1"></span>	<span class="kd">var</span> <span class="nx">a</span> <span class="o">*</span><span class="nx">Activities</span>
+</span><span><span class="ln" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>	<span class="k">defer</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span><span><span class="ln" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>
+</span><span><span class="ln" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>		<span class="k">if</span> <span class="p">!</span><span class="nx">errors</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="nx">ctx</span><span class="p">.</span><span class="nf">Err</span><span class="p">(),</span> <span class="nx">workflow</span><span class="p">.</span><span class="nx">ErrCanceled</span><span class="p">)</span> <span class="p">{</span>
+</span><span><span class="ln" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>			<span class="k">return</span>
+</span><span><span class="ln" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>		<span class="p">}</span>
+</span><span><span class="ln" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>
+</span><span><span class="ln" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>		<span class="c1">// When the workflow is canceled, it has to get a new disconnected context
+</span></span><span><span class="ln" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span><span class="c1"></span>		<span class="nx">newCtx</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">workflow</span><span class="p">.</span><span class="nf">NewDisconnectedContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span><span><span class="ln" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">workflow</span><span class="p">.</span><span class="nf">ExecuteActivity</span><span class="p">(</span><span class="nx">newCtx</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">CleanupActivity</span><span class="p">).</span><span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+</span><span><span class="ln" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span><span><span class="ln" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>			<span class="nx">log</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="s">&#34;CleanupActivity failed&#34;</span><span class="p">,</span> <span class="s">&#34;Error&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span><span><span class="ln" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span>		<span class="p">}</span>
+</span><span><span class="ln" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span>	<span class="p">}()</span>
+</span><span><span class="ln" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span>
+</span><span><span class="ln" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span>	<span class="kd">var</span> <span class="nx">result</span> <span class="kt">string</span>
+</span><span><span class="ln" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span>	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">workflow</span><span class="p">.</span><span class="nf">ExecuteActivity</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">ActivityToBeCanceled</span><span class="p">).</span><span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">result</span><span class="p">)</span>
+</span><span><span class="ln" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span>	<span class="nx">log</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;ActivityToBeCanceled returned&#34;</span><span class="p">,</span> <span class="s">&#34;Result&#34;</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="s">&#34;Error&#34;</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span><span><span class="ln" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span>
+</span><span><span class="ln" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span>	<span class="nx">err</span> <span class="p">=</span> <span class="nx">workflow</span><span class="p">.</span><span class="nf">ExecuteActivity</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">ActivityToBeSkipped</span><span class="p">).</span><span class="nf">Get</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+</span><span><span class="ln" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a></span>	<span class="nx">log</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="s">&#34;Error from ActivityToBeSkipped&#34;</span><span class="p">,</span> <span class="s">&#34;Error&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span><span><span class="ln" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a></span>
+</span><span><span class="ln" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a></span>	<span class="nx">log</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;Workflow Execution complete&#34;</span><span class="p">)</span>
+</span><span><span class="ln" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a></span>
+</span><span><span class="ln" id="46"><a style="outline: none; text-decoration:none; color:inherit" href="#46">46</a></span>	<span class="k">return</span> <span class="kc">nil</span>
+</span><span><span class="ln" id="47"><a style="outline: none; text-decoration:none; color:inherit" href="#47">47</a></span><span class="p">}</span>
+</span><span><span class="ln" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a></span>
+</span><span><span class="ln" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a></span><span class="kd">type</span> <span class="nx">Activities</span> <span class="kd">struct</span><span class="p">{}</span>
+</span><span><span class="ln" id="50"><a style="outline: none; text-decoration:none; color:inherit" href="#50">50</a></span>
+</span><span><span class="ln" id="51"><a style="outline: none; text-decoration:none; color:inherit" href="#51">51</a></span><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">Activities</span><span class="p">)</span> <span class="nf">ActivityToBeCanceled</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span><span><span class="ln" id="52"><a style="outline: none; text-decoration:none; color:inherit" href="#52">52</a></span>	<span class="nx">logger</span> <span class="o">:=</span> <span class="nx">activity</span><span class="p">.</span><span class="nf">GetLogger</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span><span><span class="ln" id="53"><a style="outline: none; text-decoration:none; color:inherit" href="#53">53</a></span>	<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;activity started&#34;</span><span class="p">)</span>
+</span><span><span class="ln" id="54"><a style="outline: none; text-decoration:none; color:inherit" href="#54">54</a></span>	<span class="k">for</span> <span class="p">{</span>
+</span><span><span class="ln" id="55"><a style="outline: none; text-decoration:none; color:inherit" href="#55">55</a></span>		<span class="k">select</span> <span class="p">{</span>
+</span><span><span class="ln" id="56"><a style="outline: none; text-decoration:none; color:inherit" href="#56">56</a></span>		<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">time</span><span class="p">.</span><span class="nf">After</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">):</span>
+</span><span><span class="ln" id="57"><a style="outline: none; text-decoration:none; color:inherit" href="#57">57</a></span>			<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;heartbeating...&#34;</span><span class="p">)</span>
+</span><span><span class="ln" id="58"><a style="outline: none; text-decoration:none; color:inherit" href="#58">58</a></span>			<span class="nx">activity</span><span class="p">.</span><span class="nf">RecordHeartbeat</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
+</span><span><span class="ln" id="59"><a style="outline: none; text-decoration:none; color:inherit" href="#59">59</a></span>		<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">ctx</span><span class="p">.</span><span class="nf">Done</span><span class="p">():</span>
+</span><span><span class="ln" id="60"><a style="outline: none; text-decoration:none; color:inherit" href="#60">60</a></span>			<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;context is cancelled&#34;</span><span class="p">)</span>
+</span><span><span class="ln" id="61"><a style="outline: none; text-decoration:none; color:inherit" href="#61">61</a></span>			<span class="k">return</span> <span class="s">&#34;I am canceled by Done&#34;</span><span class="p">,</span> <span class="kc">nil</span>
+</span><span><span class="ln" id="62"><a style="outline: none; text-decoration:none; color:inherit" href="#62">62</a></span>		<span class="p">}</span>
+</span><span><span class="ln" id="63"><a style="outline: none; text-decoration:none; color:inherit" href="#63">63</a></span>	<span class="p">}</span>
+</span><span><span class="ln" id="64"><a style="outline: none; text-decoration:none; color:inherit" href="#64">64</a></span><span class="p">}</span>
+</span><span><span class="ln" id="65"><a style="outline: none; text-decoration:none; color:inherit" href="#65">65</a></span>
+</span><span><span class="ln" id="66"><a style="outline: none; text-decoration:none; color:inherit" href="#66">66</a></span><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">Activities</span><span class="p">)</span> <span class="nf">CleanupActivity</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span><span><span class="ln" id="67"><a style="outline: none; text-decoration:none; color:inherit" href="#67">67</a></span>	<span class="nx">logger</span> <span class="o">:=</span> <span class="nx">activity</span><span class="p">.</span><span class="nf">GetLogger</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span><span><span class="ln" id="68"><a style="outline: none; text-decoration:none; color:inherit" href="#68">68</a></span>	<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;Cleanup Activity started&#34;</span><span class="p">)</span>
+</span><span><span class="ln" id="69"><a style="outline: none; text-decoration:none; color:inherit" href="#69">69</a></span>	<span class="k">return</span> <span class="kc">nil</span>
+</span><span><span class="ln" id="70"><a style="outline: none; text-decoration:none; color:inherit" href="#70">70</a></span><span class="p">}</span>
+</span><span><span class="ln" id="71"><a style="outline: none; text-decoration:none; color:inherit" href="#71">71</a></span>
+</span><span><span class="ln" id="72"><a style="outline: none; text-decoration:none; color:inherit" href="#72">72</a></span><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">Activities</span><span class="p">)</span> <span class="nf">ActivityToBeSkipped</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span><span><span class="ln" id="73"><a style="outline: none; text-decoration:none; color:inherit" href="#73">73</a></span>	<span class="nx">logger</span> <span class="o">:=</span> <span class="nx">activity</span><span class="p">.</span><span class="nf">GetLogger</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span><span><span class="ln" id="74"><a style="outline: none; text-decoration:none; color:inherit" href="#74">74</a></span>	<span class="nx">logger</span><span class="p">.</span><span class="nf">Info</span><span class="p">(</span><span class="s">&#34;this Activity will be skipped due to cancellation&#34;</span><span class="p">)</span>
+</span><span><span class="ln" id="75"><a style="outline: none; text-decoration:none; color:inherit" href="#75">75</a></span>	<span class="k">return</span> <span class="kc">nil</span>
+</span><span><span class="ln" id="76"><a style="outline: none; text-decoration:none; color:inherit" href="#76">76</a></span><span class="p">}</span>
+</span></pre>
+<script>
+  const lines = (new URLSearchParams(window.location.search)).get('hl').split(',')
+
+  // Highlight all lines
+  lines.forEach(v => document.getElementById(v).parentElement.classList.add('hl'))
+
+  // Due to chrome scrolling the parent when using an anchor, we instead just
+  // manually scroll to two before the given line
+  if (lines.length > 0) {
+    setTimeout(() =>
+      scroll({ top: document.getElementById('' + Math.max(1, parseInt(lines[0], 10) - 2)).offsetTop }), 1)
+  }
+</script>
+</body>
+</html>

@@ -38,6 +38,9 @@ This example, if run within a directory that has a `go.mod`, and has a past work
 `MY_WF_ID` on the localhost server, will replay the steps on the top-level package function `WorkflowFunction`, and dump
 the events and the lines of code executed in the exact order.
 
+Instead of dumping to stdout, `--json` can be used to set a JSON output file or `--html` can be used to set an HTML
+output directory.
+
 There are other settings/approaches that can be used. Run `temporal-debug-go help trace` for more details.
 
 The `github.com/cretz/temporal-debug-go/tracer` package can also be used as a library to run programmatically.
@@ -117,6 +120,10 @@ This will end with the output:
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:32
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:35
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:46
+
+If `--json examples/cancellation/trace.json` is used, the output will look like
+[this JSON file](examples/cancellation/trace.json). If `--html examples/cancellation/html` is used, in a browser the
+output will look like [this page](https://cretz.github.io/temporal-debug-go/examples/cancellation/html/).
 
 ### How
 

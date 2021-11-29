@@ -3,6 +3,7 @@ module github.com/cretz/temporal-debug-go
 go 1.17
 
 require (
+	github.com/alecthomas/chroma v0.9.4
 	github.com/go-delve/delve v1.7.3
 	github.com/google/uuid v1.3.0
 	github.com/urfave/cli/v2 v2.3.0
@@ -14,6 +15,7 @@ require (
 	github.com/cilium/ebpf v0.7.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
