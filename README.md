@@ -45,6 +45,17 @@ There are other settings/approaches that can be used. Run `temporal-debug-go hel
 
 The `github.com/cretz/temporal-debug-go/tracer` package can also be used as a library to run programmatically.
 
+#### Slow Execution
+
+If the tracer is too slow and going through too much code, you may get something like:
+
+    Error Potential deadlock detected: workflow goroutine "root" didn't yield for over a second
+
+This is because the debugger is going so slow stepping so many lines. Until
+[issue 2](https://github.com/cretz/temporal-debug-go/issues/2) is fixed, the current tracer steps through every line of
+non-Temporal-non-Go-stdlib code. The deadlock timeout can be disabled by setting `TEMPORAL_DEBUG` environment variable
+to any value.
+
 ### Example
 
 For example, at [examples/cancellation/workflow.go](examples/cancellation/workflow.go) there is a workflow and set of
