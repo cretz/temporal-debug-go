@@ -39,7 +39,7 @@ This example, if run within a directory that has a `go.mod`, and has a past work
 the events and the lines of code executed in the exact order.
 
 Instead of dumping to stdout, `--json` can be used to set a JSON output file or `--html` can be used to set an HTML
-output directory.
+output directory. Even if the replay of the workflow fails, output will still be performed.
 
 There are other settings/approaches that can be used. Run `temporal-debug-go help trace` for more details.
 
@@ -51,10 +51,13 @@ If the tracer is too slow and going through too much code, you may get something
 
     Error Potential deadlock detected: workflow goroutine "root" didn't yield for over a second
 
-This is because the debugger is going so slow stepping so many lines. Until
-[issue 2](https://github.com/cretz/temporal-debug-go/issues/2) is fixed, the current tracer steps through every line of
-non-Temporal-non-Go-stdlib code. The deadlock timeout can be disabled by setting `TEMPORAL_DEBUG` environment variable
-to any value.
+This is because the debugger is going so slow stepping so many lines. The debugger can be sped up significantly by
+stepping out of files/functions eagerly. Use the `--exclude_func` and `--exclude_file` options to add regular expression
+patterns for functions and files to step out of when they are reached. This means that code events will not be captured
+for them _or for any code that is executed by them_ since this literally does a step-out debugger command. Note, files
+are normalized to use the `/` separator before matched on all platforms.
+
+The deadlock timeout can be removed altogether by setting the `TEMPORAL_DEBUG` environment variable to any value.
 
 ### Example
 

@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -16,6 +17,23 @@ import (
 	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/workflow"
 )
+
+var ImpliedExcludeFuncs = []*regexp.Regexp{
+	// Exclude all Temporal internal code
+	regexp.MustCompile(`^go\.temporal\.io/sdk/.*`),
+	// Exclude all Uber atomic code
+	regexp.MustCompile(`^go\.uber\.org/atomic\..*`),
+	// Exclude anything in runtime package (this does not appear as part of
+	// GOROOT so the file matcher does not apply)
+	regexp.MustCompile(`^runtime\..*`),
+	// Exclude the main.main function
+	regexp.MustCompile(`^main\.main$`),
+}
+
+var ImpliedExcludeFiles = []*regexp.Regexp{
+	// No files in GOROOT
+	regexp.MustCompile("^" + filepath.ToSlash(filepath.Join(runtime.GOROOT(), "src")) + ".*"),
+}
 
 type Config struct {
 	ClientOptions client.Options
@@ -33,6 +51,11 @@ type Config struct {
 	// package works properly
 	RootDir       string
 	RetainTempDir bool
+
+	// These are stepped out of if reached in any way. ImpliedExcludeFuncs and
+	// ImpliedExcludeFiles are automatically assumed.
+	ExcludeFuncs []*regexp.Regexp
+	ExcludeFiles []*regexp.Regexp
 
 	IncludeTemporalInternal bool
 }
@@ -68,6 +91,7 @@ func New(config Config) (*Tracer, error) {
 	return t, nil
 }
 
+// This may still return a result, even if there is an error
 func (t *Tracer) Trace(ctx context.Context) (*Result, error) {
 	// Create temp dir
 	dir, err := os.MkdirTemp(t.RootDir, "debug-go-trace-")
@@ -126,10 +150,9 @@ func (t *Tracer) Trace(ctx context.Context) (*Result, error) {
 		return nil, err
 	}
 	defer trace.close()
-	if err := trace.run(); err != nil {
-		return nil, err
-	}
-	return &trace.result, nil
+	// Run and return result even if it errors
+	err = trace.run()
+	return &trace.result, err
 }
 
 func (t *Tracer) buildReplayMainCode() ([]byte, error) {

@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -112,7 +111,6 @@ func (t *trace) run() error {
 	}
 
 	// Step until runtime exit
-	goRootSrc := filepath.ToSlash(filepath.Join(runtime.GOROOT(), "src"))
 	for !t.state.Exited {
 
 		// If we have hit a breakpoint, capture it
@@ -136,13 +134,12 @@ func (t *trace) run() error {
 			}
 		}
 
-		// If the file is in the GOROOT or part of Temporal inner code, we step out
-		goStdOrTemporal := strings.HasPrefix(filepath.ToSlash(t.state.CurrentThread.File), goRootSrc) ||
-			strings.HasPrefix(t.state.CurrentThread.Function.Name(), "go.temporal.io/sdk/") ||
-			strings.HasPrefix(t.state.CurrentThread.Function.Name(), "go.uber.org/atomic.") ||
-			strings.HasPrefix(t.state.CurrentThread.Function.Name(), "runtime.") ||
-			t.state.CurrentThread.Function.Name() == "main.main"
-		if goStdOrTemporal {
+		// Check if the file or the function matches any exclusion regexes. If it
+		// does, we want to step out. This is important for performance.
+		shouldStepOut :=
+			matchesAnyRegexp(filepath.ToSlash(t.state.CurrentThread.File), ImpliedExcludeFiles, t.ExcludeFiles) ||
+				matchesAnyRegexp(t.state.CurrentThread.Function.Name(), ImpliedExcludeFuncs, t.ExcludeFuncs)
+		if shouldStepOut {
 			// If the function is runtime.goexit, we cannot step out because there is
 			// nothing to step out to
 			if strings.HasPrefix(t.state.CurrentThread.Function.Name(), "runtime.goexit") {
@@ -156,8 +153,8 @@ func (t *trace) run() error {
 			continue
 		}
 
-		// This is a line that represents an event if not Go stdlib or temporal
-		if t.state.CurrentThread.File != "" && !goStdOrTemporal {
+		// This is a line that represents an event if there is a file
+		if t.state.CurrentThread.File != "" {
 			pkg, _ := t.debug.CurrentPackage()
 			t.result.Events = append(t.result.Events, &Event{Code: &EventCode{
 				Package:   pkg,
@@ -330,4 +327,15 @@ func intInTrailingParens(str string) (int, error) {
 	}
 	intStr := str[beginParens+1 : len(str)-1]
 	return strconv.Atoi(intStr)
+}
+
+func matchesAnyRegexp(str string, regexSets ...[]*regexp.Regexp) bool {
+	for _, regexSet := range regexSets {
+		for _, regex := range regexSet {
+			if regex.MatchString(str) {
+				return true
+			}
+		}
+	}
+	return false
 }
