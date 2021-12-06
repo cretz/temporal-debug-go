@@ -17,7 +17,7 @@ import (
 	"github.com/alecthomas/chroma/styles"
 )
 
-func (t *Tracer) GenerateHTML(dir string, res *Result) error {
+func (tr *Tracer) GenerateHTML(dir string, res *Result) error {
 	// Create all the source HTML files and keep map of file path to html path
 	var p page
 	p.sources = map[string]string{}
@@ -45,10 +45,10 @@ func (t *Tracer) GenerateHTML(dir string, res *Result) error {
 	p.h("<head>")
 	p.indent()
 	p.h(`<meta charset="utf-8">`)
-	if t.Execution != nil {
-		p.h("<title>", "Workflow ", esc(t.Execution.ID), "</title>")
-	} else if t.HistoryFile != "" {
-		p.h("<title>", "History ", esc(t.HistoryFile), "</title>")
+	if tr.Execution != nil {
+		p.h("<title>", "Workflow ", esc(tr.Execution.ID), "</title>")
+	} else if tr.HistoryFile != "" {
+		p.h("<title>", "History ", esc(tr.HistoryFile), "</title>")
 	}
 	p.dedent()
 	p.h("</head>")
@@ -58,15 +58,15 @@ func (t *Tracer) GenerateHTML(dir string, res *Result) error {
 	p.h("<div>")
 	p.indent()
 	p.h("<h1>Workflow Execution</h1>")
-	if t.Execution != nil {
-		p.h("<strong>ID: </strong>", esc(t.Execution.ID), "<br />")
-		if t.Execution.RunID != "" {
-			p.h("<strong>Run ID: </strong>", esc(t.Execution.RunID), "<br />")
+	if tr.Execution != nil {
+		p.h("<strong>ID: </strong>", esc(tr.Execution.ID), "<br />")
+		if tr.Execution.RunID != "" {
+			p.h("<strong>Run ID: </strong>", esc(tr.Execution.RunID), "<br />")
 		}
-	} else if t.HistoryFile != "" {
-		p.h("<strong>History: </strong>", esc(t.HistoryFile), "<br />")
+	} else if tr.HistoryFile != "" {
+		p.h("<strong>History: </strong>", esc(tr.HistoryFile), "<br />")
 	}
-	p.h("<strong>Entry Function: </strong>", t.fnPkg, " - ", t.fn)
+	p.h("<strong>Entry Function: </strong>", tr.fnPkg, " - ", tr.fn)
 	p.dedent()
 	p.h("</div>")
 

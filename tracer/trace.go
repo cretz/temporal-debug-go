@@ -64,7 +64,13 @@ func (tr *Tracer) newTrace(dir, exe string) (*trace, error) {
 	)
 
 	// Add breakpoint for workflow start
-	err = t.addFuncBreakpoint(t.fnPkg+"."+t.fn, nil)
+	var fnName string
+	if t.fnStruct != "" {
+		fnName = t.fnPkg + ".(*" + t.fnStruct + ")." + t.fn
+	} else {
+		fnName = t.fnPkg + "." + t.fn
+	}
+	err = t.addFuncBreakpoint(fnName, nil)
 	// Add breakpoint for obtaining the event
 	if err == nil {
 		err = t.addFileLineBreakpoint(matchInternalEventHandlers, "\tif event == nil {", t.onProcessEvent)
