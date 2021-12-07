@@ -6,6 +6,7 @@ import (
 	"go/format"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -62,8 +63,9 @@ type Config struct {
 
 type Tracer struct {
 	Config
-	fnPkg string
-	fn    string
+	fnPkg    string
+	fn       string
+	fnStruct string
 }
 
 func New(config Config) (*Tracer, error) {
@@ -82,16 +84,25 @@ func New(config Config) (*Tracer, error) {
 	if len(t.WorkflowFuncs) != 1 {
 		return nil, fmt.Errorf("single workflow function required")
 	}
-	// TODO(cretz): Support struct-based workflows
 	lastDot := strings.LastIndex(config.WorkflowFuncs[0], ".")
 	if lastDot == -1 {
 		return nil, fmt.Errorf("workflow function missing dot")
 	}
 	t.fnPkg, t.fn = config.WorkflowFuncs[0][:lastDot], config.WorkflowFuncs[0][lastDot+1:]
+	// check for struct-based workflow function
+	base := path.Base(config.WorkflowFuncs[0])
+	if strings.Count(base, ".") > 2 {
+		return nil, fmt.Errorf("workflow function has too many dots")
+	}
+	structBased := strings.Count(base, ".") == 2
+	if lastDot2 := strings.LastIndex(t.fnPkg, "."); structBased && lastDot2 > -1 {
+		t.fnPkg, t.fnStruct = t.fnPkg[:lastDot2], t.fnPkg[lastDot2+1:]
+	}
+
 	return t, nil
 }
 
-// This may still return a result, even if there is an error
+// Trace This may still return a result, even if there is an error
 func (t *Tracer) Trace(ctx context.Context) (*Result, error) {
 	// Create temp dir
 	dir, err := os.MkdirTemp(t.RootDir, "debug-go-trace-")
@@ -180,10 +191,20 @@ func main() {
 		log.Fatalf("failed creating client: %v", err)
 	}
 	defer c.Close()
+`
+	var wfFn string
+	if t.fnStruct != "" {
+		source += `
+        var fnStruct *fnpkg.` + t.fnStruct
+		wfFn = "fnStruct." + t.fn
+	} else {
+		wfFn = "fnpkg." + t.fn
+	}
 
+	source += `
 	// Create replayer
 	replayer := worker.NewWorkflowReplayer()
-	replayer.RegisterWorkflow(fnpkg.` + t.fn + `)
+	replayer.RegisterWorkflow(` + wfFn + `)
 `
 	// Load history if execution, otherwise use file
 	if t.Execution != nil {

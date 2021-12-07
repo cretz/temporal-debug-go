@@ -78,10 +78,9 @@ func (t *TraceConfig) flags() []cli.Flag {
 		},
 		// TODO(cretz): Support multiple workflow functions
 		&cli.StringFlag{
-			Name:    "func",
-			Aliases: []string{"fn"},
-			// TODO(cretz): Support expressions for struct-based functions
-			Usage:       "Workflow function, qualified with package up to last dot",
+			Name:        "func",
+			Aliases:     []string{"fn"},
+			Usage:       "Workflow function, qualified with package up to last dot. In case of struct-based workflow function a simplified version of fqdn is used: '.../package.Struct.Function' is used",
 			Required:    true,
 			Destination: &t.Func,
 		},
