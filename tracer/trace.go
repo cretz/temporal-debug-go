@@ -31,9 +31,9 @@ type breakpoint struct {
 	handler func() error
 }
 
-func (tr *Tracer) newTrace(dir, exe string) (*trace, error) {
-	t := &trace{
-		Tracer:         tr,
+func (t *Tracer) newTrace(dir, exe string) (*trace, error) {
+	tr := &trace{
+		Tracer:         t,
 		sourceCache:    map[string]string{},
 		packageFiles:   map[string]string{},
 		breakpoints:    map[int]*breakpoint{},
@@ -41,9 +41,9 @@ func (tr *Tracer) newTrace(dir, exe string) (*trace, error) {
 	}
 
 	// Create debugger
-	t.Log.Debug("Starting debugger")
+	tr.Log.Debug("Starting debugger")
 	var err error
-	t.debug, err = debugger.New(&debugger.Config{WorkingDir: dir, Backend: "default"}, []string{exe})
+	tr.debug, err = debugger.New(&debugger.Config{WorkingDir: dir, Backend: "default"}, []string{exe})
 	if err != nil {
 		return nil, fmt.Errorf("failed creating debugger: %w", err)
 	}
@@ -51,11 +51,11 @@ func (tr *Tracer) newTrace(dir, exe string) (*trace, error) {
 	success := false
 	defer func() {
 		if !success {
-			t.close()
+			tr.close()
 		}
 	}()
 
-	t.Log.Debug("Setting breakpoints")
+	tr.Log.Debug("Setting breakpoints")
 	const (
 		matchInternalPkg           = `.*/go\.temporal\.io/sdk.*/internal/`
 		matchInternalEventHandlers = matchInternalPkg + `internal_event_handlers\.go`
@@ -65,35 +65,35 @@ func (tr *Tracer) newTrace(dir, exe string) (*trace, error) {
 
 	// Add breakpoint for workflow start
 	var fnName string
-	if t.fnStruct != "" {
-		fnName = t.fnPkg + ".(*" + t.fnStruct + ")." + t.fn
+	if tr.fnStruct != "" {
+		fnName = tr.fnPkg + ".(*" + tr.fnStruct + ")." + tr.fn
 	} else {
-		fnName = t.fnPkg + "." + t.fn
+		fnName = tr.fnPkg + "." + tr.fn
 	}
-	err = t.addFuncBreakpoint(fnName, nil)
+	err = tr.addFuncBreakpoint(fnName, nil)
 	// Add breakpoint for obtaining the event
 	if err == nil {
-		err = t.addFileLineBreakpoint(matchInternalEventHandlers, "\tif event == nil {", t.onProcessEvent)
+		err = tr.addFileLineBreakpoint(matchInternalEventHandlers, "\tif event == nil {", tr.onProcessEvent)
 	}
 	// Add breakpoint for obtaining the commands
 	if err == nil {
-		err = t.addFileLineBreakpoint(matchInternalTaskHandlers, "if len(eventCommands) > 0 && !skipReplayCheck {",
-			t.onReplayCommands)
+		err = tr.addFileLineBreakpoint(matchInternalTaskHandlers, "if len(eventCommands) > 0 && !skipReplayCheck {",
+			tr.onReplayCommands)
 	}
 	// Add breakpoint for coroutine spawning
 	if err == nil {
-		err = t.addFileLineBreakpoint(matchInternalWorkflow, "\t\tf(spawned)", t.populateCoroutineName)
+		err = tr.addFileLineBreakpoint(matchInternalWorkflow, "\t\tf(spawned)", tr.populateCoroutineName)
 	}
 	// Add breakpoint for end of initial yield
 	if err == nil {
-		err = t.addFileLineBreakpoint(matchInternalWorkflow, "\ts.blocked.Swap(false)", nil)
+		err = tr.addFileLineBreakpoint(matchInternalWorkflow, "\ts.blocked.Swap(false)", nil)
 	}
 	if err != nil {
 		return nil, err
 	}
 
 	success = true
-	return t, nil
+	return tr, nil
 }
 
 func (t *trace) close() {

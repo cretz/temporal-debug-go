@@ -103,9 +103,9 @@ func New(config Config) (*Tracer, error) {
 }
 
 // Trace This may still return a result, even if there is an error
-func (tr *Tracer) Trace(ctx context.Context) (*Result, error) {
+func (t *Tracer) Trace(ctx context.Context) (*Result, error) {
 	// Create temp dir
-	dir, err := os.MkdirTemp(tr.RootDir, "debug-go-trace-")
+	dir, err := os.MkdirTemp(t.RootDir, "debug-go-trace-")
 	if err != nil {
 		return nil, fmt.Errorf("failed creating temp dir: %w", err)
 	}
@@ -113,8 +113,8 @@ func (tr *Tracer) Trace(ctx context.Context) (*Result, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not turn dir absolute: %w", err)
 	}
-	tr.Log.Debug("Created temp dir", "Dir", dir)
-	if !tr.RetainTempDir {
+	t.Log.Debug("Created temp dir", "Dir", dir)
+	if !t.RetainTempDir {
 		defer func() {
 			// We have to try this 20 times on Windows because there is a delay on
 			// process exit before we can delete. This mimics what
@@ -128,14 +128,14 @@ func (tr *Tracer) Trace(ctx context.Context) (*Result, error) {
 				time.Sleep(1 * time.Millisecond)
 			}
 			if err != nil {
-				tr.Log.Warn("Failed deleting temp dir", "Dir", dir, "Error", err)
+				t.Log.Warn("Failed deleting temp dir", "Dir", dir, "Error", err)
 			}
 		}()
 	}
 
 	// Create main.go
-	tr.Log.Debug("Creating temp main.go")
-	if b, err := tr.buildReplayMainCode(); err != nil {
+	t.Log.Debug("Creating temp main.go")
+	if b, err := t.buildReplayMainCode(); err != nil {
 		return nil, fmt.Errorf("failed building temp main.go: %w", err)
 	} else if err = os.WriteFile(filepath.Join(dir, "main.go"), b, 0644); err != nil {
 		return nil, fmt.Errorf("failed writing temp main.go: %w", err)
@@ -143,7 +143,7 @@ func (tr *Tracer) Trace(ctx context.Context) (*Result, error) {
 
 	// Build binary with optimizations disabled (what the delve gobuild does for
 	// >= 1.10.0)
-	tr.Log.Debug("Building temp main.go")
+	t.Log.Debug("Building temp main.go")
 	exe := filepath.Join(dir, "main")
 	if runtime.GOOS == "windows" {
 		exe += ".exe"
@@ -156,7 +156,7 @@ func (tr *Tracer) Trace(ctx context.Context) (*Result, error) {
 	}
 
 	// Run trace
-	trace, err := tr.newTrace(dir, exe)
+	trace, err := t.newTrace(dir, exe)
 	if err != nil {
 		return nil, err
 	}
@@ -166,8 +166,8 @@ func (tr *Tracer) Trace(ctx context.Context) (*Result, error) {
 	return &trace.result, err
 }
 
-func (tr *Tracer) buildReplayMainCode() ([]byte, error) {
-	optionsCode, err := tr.buildClientOptionsCode()
+func (t *Tracer) buildReplayMainCode() ([]byte, error) {
+	optionsCode, err := t.buildClientOptionsCode()
 	if err != nil {
 		return nil, fmt.Errorf("invalid client options: %w", err)
 	}
@@ -177,7 +177,7 @@ import (
 	"log"
 	"context"
 
-	fnpkg "` + tr.fnPkg + `"
+	fnpkg "` + t.fnPkg + `"
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/history/v1"
 	"go.temporal.io/sdk/client"
@@ -193,12 +193,12 @@ func main() {
 	defer c.Close()
 `
 	var wfFn string
-	if tr.fnStruct != "" {
+	if t.fnStruct != "" {
 		source += `
-        var fnStruct *fnpkg.` + tr.fnStruct
-		wfFn = "fnStruct." + tr.fn
+        var fnStruct *fnpkg.` + t.fnStruct
+		wfFn = "fnStruct." + t.fn
 	} else {
-		wfFn = "fnpkg." + tr.fn
+		wfFn = "fnpkg." + t.fn
 	}
 
 	source += `
@@ -207,14 +207,14 @@ func main() {
 	replayer.RegisterWorkflow(` + wfFn + `)
 `
 	// Load history if execution, otherwise use file
-	if tr.Execution != nil {
+	if t.Execution != nil {
 		source += `
 	// Load history
 	var hist history.History
 	iter := c.GetWorkflowHistory(
 		context.Background(),
-		` + strconv.Quote(tr.Execution.ID) + `,
-		` + strconv.Quote(tr.Execution.RunID) + `,
+		` + strconv.Quote(t.Execution.ID) + `,
+		` + strconv.Quote(t.Execution.RunID) + `,
 		false,
 		enums.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT,
 	)
@@ -231,7 +231,7 @@ func main() {
 	} else {
 		source += `
 	// Run from file
-	err = replayer.ReplayWorkflowHistoryFromJSONFile(nil, ` + strconv.Quote(tr.HistoryFile) + `) error
+	err = replayer.ReplayWorkflowHistoryFromJSONFile(nil, ` + strconv.Quote(t.HistoryFile) + `) error
 	`
 	}
 	source += `
@@ -243,14 +243,14 @@ func main() {
 	return format.Source([]byte(source))
 }
 
-func (tr *Tracer) buildClientOptionsCode() (string, error) {
+func (t *Tracer) buildClientOptionsCode() (string, error) {
 	// For now, only some params required, others disallowed
-	if tr.ClientOptions.HostPort == "" {
+	if t.ClientOptions.HostPort == "" {
 		return "", fmt.Errorf("missing host:port")
-	} else if tr.ClientOptions.Namespace == "" {
+	} else if t.ClientOptions.Namespace == "" {
 		return "", fmt.Errorf("missing namespace")
 	}
 	// TODO(cretz): Validate none of the unsupported values are set
 	return fmt.Sprintf("client.Options{HostPort: %q, Namespace: %q}",
-		tr.ClientOptions.HostPort, tr.ClientOptions.Namespace), nil
+		t.ClientOptions.HostPort, t.ClientOptions.Namespace), nil
 }
