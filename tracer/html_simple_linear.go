@@ -2,6 +2,7 @@ package tracer
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"html"
 	"os"
@@ -17,9 +18,11 @@ import (
 	"github.com/alecthomas/chroma/styles"
 )
 
-func (t *Tracer) GenerateHTML(dir string, res *Result) error {
+type HTMLGeneratorSimpleLinear struct{}
+
+func (h HTMLGeneratorSimpleLinear) GenerateHTML(ctx context.Context, t *Tracer, dir string, res *Result) error {
 	// Create all the source HTML files and keep map of file path to html path
-	var p page
+	var p simplePage
 	p.sources = map[string]string{}
 	for _, event := range res.Events {
 		if event.Code != nil && p.sources[event.Code.File] == "" {
@@ -32,7 +35,7 @@ func (t *Tracer) GenerateHTML(dir string, res *Result) error {
 				return fmt.Errorf("failed creating dir %v: %w", filepath.Dir(absFile), err)
 			}
 			// Write
-			if err := writeGoHTMLFile(event.Code.File, absFile); err != nil {
+			if err := h.writeGoHTMLFile(event.Code.File, absFile); err != nil {
 				return err
 			}
 			p.sources[event.Code.File] = relFile
@@ -105,75 +108,7 @@ func (t *Tracer) GenerateHTML(dir string, res *Result) error {
 	return os.WriteFile(filepath.Join(dir, "index.html"), p.Bytes(), 0644)
 }
 
-type page struct {
-	bytes.Buffer
-	indentStr string
-	sources   map[string]string
-}
-
-func (p *page) h(v ...interface{}) {
-	p.WriteString(p.indentStr)
-	for _, piece := range v {
-		fmt.Fprint(p, piece)
-	}
-	fmt.Fprintln(p)
-}
-
-func (p *page) indent() {
-	p.indentStr += "  "
-}
-
-func (p *page) dedent() {
-	p.indentStr = p.indentStr[:len(p.indentStr)-2]
-}
-
-func (p *page) eventSet(events []*Event) {
-	p.h("<hr />")
-	// Handle if server or client
-	if events[0].Server != nil {
-		p.h("<strong>Events from server:</strong><br />")
-		p.h("<ul>")
-		p.indent()
-		for _, event := range events {
-			p.h("<li>", event.Server.Type, "</li>")
-		}
-		p.dedent()
-		p.h("</ul>")
-		return
-	} else if events[0].Client != nil {
-		p.h("<strong>Commands to server:</strong><br />")
-		p.h("<ul>")
-		p.indent()
-		for _, event := range events {
-			for _, command := range event.Client.Commands {
-				p.h("<li>", command, "</li>")
-			}
-		}
-		p.dedent()
-		p.h("</ul>")
-		return
-	}
-
-	// Now we know it's a code event, collect lines to highlight
-	var hl []string
-	for _, event := range events {
-		hl = append(hl, strconv.Itoa(event.Code.Line))
-	}
-	src := p.sources[events[0].Code.File] + "?hl=" + strings.Join(hl, ",")
-	p.h("<strong>Code: </strong>", esc(events[0].Code.Package), ` - <a href="`,
-		esc(src), `">`, esc(filepath.Base(events[0].Code.File)), "</a>",
-		" (coroutine: ", esc(events[0].Code.Coroutine), ")<br />")
-	// We want 2 lines before and 2 lines after
-	startLine := events[0].Code.Line - 2
-	endLine := events[len(events)-1].Code.Line + 2
-	height := (endLine - startLine) * 16
-	// Build URL for iframe
-	p.h(`<iframe height="`, height, `" src="`, esc(src), `" frameborder="0" style="width: 100%"></iframe>`)
-}
-
-func esc(s string) string { return html.EscapeString(s) }
-
-func writeGoHTMLFile(sourceFile, targetFile string) error {
+func (HTMLGeneratorSimpleLinear) writeGoHTMLFile(sourceFile, targetFile string) error {
 	// Read source
 	source, err := os.ReadFile(sourceFile)
 	if err != nil {
@@ -226,3 +161,71 @@ func writeGoHTMLFile(sourceFile, targetFile string) error {
 	// Write
 	return os.WriteFile(targetFile, b, 0644)
 }
+
+type simplePage struct {
+	bytes.Buffer
+	indentStr string
+	sources   map[string]string
+}
+
+func (p *simplePage) h(v ...interface{}) {
+	p.WriteString(p.indentStr)
+	for _, piece := range v {
+		fmt.Fprint(p, piece)
+	}
+	fmt.Fprintln(p)
+}
+
+func (p *simplePage) indent() {
+	p.indentStr += "  "
+}
+
+func (p *simplePage) dedent() {
+	p.indentStr = p.indentStr[:len(p.indentStr)-2]
+}
+
+func (p *simplePage) eventSet(events []*Event) {
+	p.h("<hr />")
+	// Handle if server or client
+	if events[0].Server != nil {
+		p.h("<strong>Events from server:</strong><br />")
+		p.h("<ul>")
+		p.indent()
+		for _, event := range events {
+			p.h("<li>", event.Server.Type, "</li>")
+		}
+		p.dedent()
+		p.h("</ul>")
+		return
+	} else if events[0].Client != nil {
+		p.h("<strong>Commands to server:</strong><br />")
+		p.h("<ul>")
+		p.indent()
+		for _, event := range events {
+			for _, command := range event.Client.Commands {
+				p.h("<li>", command, "</li>")
+			}
+		}
+		p.dedent()
+		p.h("</ul>")
+		return
+	}
+
+	// Now we know it's a code event, collect lines to highlight
+	var hl []string
+	for _, event := range events {
+		hl = append(hl, strconv.Itoa(event.Code.Line))
+	}
+	src := p.sources[events[0].Code.File] + "?hl=" + strings.Join(hl, ",")
+	p.h("<strong>Code: </strong>", esc(events[0].Code.Package), ` - <a href="`,
+		esc(src), `">`, esc(filepath.Base(events[0].Code.File)), "</a>",
+		" (coroutine: ", esc(events[0].Code.Coroutine), ")<br />")
+	// We want 2 lines before and 2 lines after
+	startLine := events[0].Code.Line - 2
+	endLine := events[len(events)-1].Code.Line + 2
+	height := (endLine - startLine) * 16
+	// Build URL for iframe
+	p.h(`<iframe height="`, height, `" src="`, esc(src), `" frameborder="0" style="width: 100%"></iframe>`)
+}
+
+func esc(s string) string { return html.EscapeString(s) }

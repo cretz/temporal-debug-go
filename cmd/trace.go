@@ -27,19 +27,20 @@ func traceCmd() *cli.Command {
 }
 
 type TraceConfig struct {
-	Address        string
-	Namespace      string
-	WorkflowID     string
-	RunID          string
-	HistoryFile    string
-	Func           string
-	OutputStdout   bool
-	OutputJSONFile string
-	OutputHTMLDir  string
-	RootDir        string
-	RetainTempDir  bool
-	ExcludeFuncs   cli.StringSlice
-	ExcludeFiles   cli.StringSlice
+	Address         string
+	Namespace       string
+	WorkflowID      string
+	RunID           string
+	HistoryFile     string
+	Func            string
+	OutputStdout    bool
+	OutputJSONFile  string
+	OutputHTMLDir   string
+	OutputHTMLTheme string
+	RootDir         string
+	RetainTempDir   bool
+	ExcludeFuncs    cli.StringSlice
+	ExcludeFiles    cli.StringSlice
 }
 
 func (t *TraceConfig) flags() []cli.Flag {
@@ -98,6 +99,12 @@ func (t *TraceConfig) flags() []cli.Flag {
 			Name:        "html",
 			Usage:       "Directory to output HTML to",
 			Destination: &t.OutputHTMLDir,
+		},
+		&cli.StringFlag{
+			Name:        "html_theme",
+			Usage:       "HTML theme to use. Either 'simple-linear' (default) or 'annotated'",
+			Value:       "simple-linear",
+			Destination: &t.OutputHTMLTheme,
 		},
 		&cli.StringFlag{
 			Name:        "root",
@@ -200,7 +207,16 @@ func trace(ctx context.Context, config TraceConfig) error {
 
 		// Dump result to HTML if requested
 		if config.OutputHTMLDir != "" {
-			if err := t.GenerateHTML(config.OutputHTMLDir, res); err != nil {
+			var err error
+			switch config.OutputHTMLTheme {
+			case "annotated":
+				err = (&tracer.HTMLGeneratorAnnotated{}).GenerateHTML(ctx, t, config.OutputHTMLDir, res)
+			case "simple-linear":
+				err = tracer.HTMLGeneratorSimpleLinear{}.GenerateHTML(ctx, t, config.OutputHTMLDir, res)
+			default:
+				err = fmt.Errorf("unrecognized theme %q", config.OutputHTMLTheme)
+			}
+			if err != nil {
 				return fmt.Errorf("failed generating HTML: %w", err)
 			}
 			fmt.Printf("Wrote HTML to %v\n", config.OutputHTMLDir)

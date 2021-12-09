@@ -7,12 +7,15 @@ require (
 	github.com/cretz/temporal-debug-go v0.1.0
 	github.com/google/uuid v1.3.0
 	github.com/stretchr/testify v1.7.0
+	go.temporal.io/api v1.6.1-0.20211110205628-60c98e9cbfe2
 	go.temporal.io/sdk v1.11.1
+	go.temporal.io/server v1.13.1-0.20211115193149-58af5da4d614
 )
 
 require (
 	cloud.google.com/go v0.97.0 // indirect
 	cloud.google.com/go/storage v1.18.2 // indirect
+	github.com/alecthomas/chroma v0.9.4 // indirect
 	github.com/apache/thrift v0.0.0-20161221203622-b2a4d4ae21c7 // indirect
 	github.com/aws/aws-sdk-go v1.41.10 // indirect
 	github.com/benbjohnson/clock v1.2.0 // indirect
@@ -24,6 +27,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1 // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
+	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/go-delve/delve v1.7.3 // indirect
 	github.com/gocql/gocql v0.0.0-20211015133455-b225f9b53fa1 // indirect
@@ -77,8 +81,6 @@ require (
 	go.opentelemetry.io/otel/sdk/export/metric v0.24.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v0.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.1.0 // indirect
-	go.temporal.io/api v1.6.1-0.20211110205628-60c98e9cbfe2 // indirect
-	go.temporal.io/server v1.13.1-0.20211115193149-58af5da4d614 // indirect
 	go.temporal.io/version v0.0.0-20201015012359-4d3bb966d193 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/dig v1.13.0 // indirect

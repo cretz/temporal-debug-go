@@ -45,6 +45,26 @@ There are other settings/approaches that can be used. Run `temporal-debug-go hel
 
 The `github.com/cretz/temporal-debug-go/tracer` package can also be used as a library to run programmatically.
 
+#### HTML Generation
+
+When `--html DIR` is set, a static HTML site is generated in `DIR` representing the execution. `--html_theme THEME` can
+be provided with one of the following values for `THEME`:
+
+**simple-linear**
+
+This is the default that just generates a simple set of linear steps with code shown highlighted in iframes.
+
+[See an example here](https://cretz.github.io/temporal-debug-go/examples/cancellation/html-linear/)
+
+**annotated**
+
+This theme uses [Code Hike](https://codehike.org/) and [Next.js](https://nextjs.org/) to generate a step-based
+visualization. Node must be installed to run this.
+
+Note: The current version suffers some known scroll jank.
+
+[See an example here](https://cretz.github.io/temporal-debug-go/examples/cancellation/html-annotated/)
+
 #### Slow Execution
 
 If the tracer is too slow and going through too much code, you may get something like:
@@ -135,9 +155,14 @@ This will end with the output:
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:35
             github.com/cretz/temporal-debug-go/examples/cancellation - workflow.go:46
 
-If `--json examples/cancellation/trace.json` is used, the output will look like
-[this JSON file](examples/cancellation/trace.json). If `--html examples/cancellation/html` is used, in a browser the
-output will look like [this page](https://cretz.github.io/temporal-debug-go/examples/cancellation/html/).
+Extra visualization options could be given such as:
+
+* `--json examples/cancellation/trace.json` - output will look like [this JSON file](examples/cancellation/trace.json)
+* `--html examples/cancellation/html-linear` - output will look like
+  [this page](https://cretz.github.io/temporal-debug-go/examples/cancellation/html-linear/)
+* `--html examples/cancellation/html-annotated --html_theme annotated` - output will look like
+  [this page](https://cretz.github.io/temporal-debug-go/examples/cancellation/html-annotated/)
+
 
 ### How
 
@@ -150,9 +175,11 @@ capturing events and code execution lines, filtering out any lines that are Go s
 
 * Multiple workflow support for child workflows
 * Expression-based workflow function creation for advanced initialization needs
-* Actually show the code not just line numbers
-* An HTML visualization option that dumps a static page that shows lines of code and is collapsible and easy to read
 * Include local variable values (and their changing) as part of the output
+* Ability to serve tracer web server
+  * Has config that has host, cache dir, code dir, and fn options
+  * When no `wid` query param present, page has form for accepting workflow ID
+  * When `wid` query param present, use cache if present (offer rebuild option) or live run if not
 
 ## Time-travelling Debugger
 
